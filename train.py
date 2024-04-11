@@ -9,26 +9,30 @@ from evaluate import accuracy
 from utils import AverageMeter, get_data_set
 from optimizer import get_optimizer
 
-def train_network(args, network=None, data_set=None):
-    device = torch.device("cuda" if args.gpu_no >= 0 else "cpu")
 
-    if network is None:
-        network = VGG(args.vgg, args.data_set)
+def train_network(args, network=None, data_set=None):
+    # device = torch.device("cuda" if args.gpu_no >= 0 else "cpu")
+    device = torch.device("cuda")
+
+
+
+    network = torchvision.models.resnet50(pretrained=True)
+
     network = network.to(device)
 
-    if data_set is None:
-        data_set = get_data_set(args, train_flag=True)
+    # Modify the final fully connected layer
+    num_ftrs = network.fc.in_features 
+    network.fc = torch.nn.Linear(num_ftrs, 10) 
+
     
     loss_calculator = Loss_Calculator()
     
     optimizer, scheduler = get_optimizer(network, args)
     
-    if args.resume_flag:
-        check_point = torch.load(args.load_path)
-        network.load_state_dict(check_point['state_dict'])
-        loss_calculator.loss_seq = check_point['loss_seq']
-        args.start_epoch = check_point['epoch'] # update start epoch
-                
+
+    data_set = get_data_set(args, train_flag=True)
+    # data_set = data_set.to("cuda")
+
     print("-*-"*10 + "\n\tTrain network\n" + "-*-"*10)
     for epoch in range(args.start_epoch, args.epoch):
         # make shuffled data loader
@@ -46,6 +50,7 @@ def train_network(args, network=None, data_set=None):
                    'loss_seq': loss_calculator.loss_seq},
                    args.save_path+"check_point.pth")
         
+            
     return network
 
 def train_step(network, data_loader, loss_calculator, optimizer, device, epoch, print_freq=100):
@@ -66,6 +71,7 @@ def train_step(network, data_loader, loss_calculator, optimizer, device, epoch, 
         data_time.update(time.time() - tic)
         
         inputs, targets = inputs.to(device), targets.to(device)
+        network = network.to(device)
         
         tic = time.time()
         outputs = network(inputs)
