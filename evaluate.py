@@ -5,9 +5,10 @@ import torch
 from network import VGG
 from utils import AverageMeter, get_data_set
 
+
 def test_network(args, network=None, data_set=None):
     device = torch.device("cuda" if args.gpu_no >= 0 else "cpu")
-    
+
     if network is None:
         network = VGG(args.vgg, args.data_set)
         if args.load_path:
@@ -22,7 +23,8 @@ def test_network(args, network=None, data_set=None):
     top1, top5 = test_step(network, data_loader, device)
     
     return network, data_set, (top1, top5)
-    
+
+
 def test_step(network, data_loader, device):
     network.eval()
         
@@ -42,7 +44,7 @@ def test_step(network, data_loader, device):
             outputs = network(inputs)
             forward_time.update(time.time() - tic)
             
-            prec1, prec5 = accuracy(outputs, targets, topk=(1,5))
+            prec1, prec5 = accuracy(outputs, targets, topk=(1, 5))
             
             top1.update(prec1.item(), inputs.size(0))
             top5.update(prec5.item(), inputs.size(0))
@@ -50,12 +52,13 @@ def test_step(network, data_loader, device):
             tic = time.time()
 
     str_ = '%s: Test information, '%time.ctime()
-    str_ += 'Data(s): %2.3f, Forward(s): %2.3f, '%(data_time.sum, forward_time.sum)
-    str_ += 'Top1: %2.3f, Top5: %2.3f, '%(top1.avg, top5.avg)
-    print("-*-"*10 + "\n\tEvalute network\n" + "-*-"*10)
+    str_ += 'Data(s): %2.3f, Forward(s): %2.3f, ' % (data_time.sum, forward_time.sum)
+    str_ += 'Top1: %2.3f, Top5: %2.3f, ' % (top1.avg, top5.avg)
+    print("-*-"*10 + "\n\tEvalute network\n" + "-*-" * 10)
     print(str_)
     
     return top1.avg, top5.avg
+
 
 def accuracy(output, target, topk=(1,)):
     """
@@ -71,6 +74,6 @@ def accuracy(output, target, topk=(1,)):
 
     res = []
     for k in topk:
-        correct_k = correct[:k].reshape(-1).float().sum(0) # used to be .view
+        correct_k = correct[:k].reshape(-1).float().sum(0)  # used to be .view
         res.append(correct_k.mul_(100.0 / batch_size))
     return res

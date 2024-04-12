@@ -1,5 +1,7 @@
 import torch
+import torchvision
 import torchvision.models as models
+
 
 class VGG(torch.nn.Module):
     def __init__(self, vgg='vgg16_bn', data_set='CIFAR10', pretrained=False):
@@ -23,3 +25,12 @@ class VGG(torch.nn.Module):
         x = torch.flatten(x, 1)
         x = self.classifier(x)
         return x
+
+
+def get_resnet():
+    network = torchvision.models.resnet50(pretrained=True)
+
+    # Modify the final fully connected layer
+    num_ftrs = network.fc.in_features
+    network.fc = torch.nn.Linear(num_ftrs, 10)
+    return network

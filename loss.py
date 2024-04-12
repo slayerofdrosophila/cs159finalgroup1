@@ -1,6 +1,7 @@
 import torch
 
-class Loss_Calculator(object):
+
+class LossCalculator(object):
     def __init__(self):
         self.criterion = torch.nn.CrossEntropyLoss()        
         self.loss_seq = []
@@ -12,6 +13,5 @@ class Loss_Calculator(object):
 
     def get_loss_log(self, length=100):
         # get recent average loss values
-        if len(self.loss_seq) < length:
-            length = len(self.loss_seq)
+        length = min(length, len(self.loss_seq))
         return sum(self.loss_seq[-length:])/length
