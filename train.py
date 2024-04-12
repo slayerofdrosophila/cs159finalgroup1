@@ -1,16 +1,17 @@
 import time
 
 import torch
-import torchvision
+from torch.utils.tensorboard import SummaryWriter
 
-from network import VGG, get_resnet
-from loss import LossCalculator
 from evaluate import accuracy
-from utils import AverageMeter, get_data_set
+from loss import LossCalculator
+from network import get_resnet
 from optimizer import get_optimizer
+from utils import AverageMeter, get_data_set
 
 
 def train_network(args, network=None, data_set=None):
+    writer = SummaryWriter()
     device = torch.device("cuda" if args.gpu_no >= 0 else "cpu")
     print("Training device:", device)
     # device = torch.device("cuda")
@@ -41,6 +42,7 @@ def train_network(args, network=None, data_set=None):
 
         torch.save({'epoch': epoch + 1, 'state_dict': network.state_dict(), 'loss_seq': loss_calculator.loss_seq},
                    args.save_path + "check_point.pth")
+        writer.add_scalar('Loss/train', loss_calculator.get_loss_log(), epoch)
 
     return network
 
@@ -87,7 +89,7 @@ def train_step(network, data_loader, loss_calculator, optimizer, device, epoch, 
             logs_ = '%s: ' % time.ctime()
             logs_ += 'Epoch [%d], ' % epoch
             logs_ += 'Iteration [%d/%d/], ' % (iteration, len(data_loader))
-            logs_ += 'Data(s): %2.3f, Loss(s): %2.3f, ' % (data_time.avg, loss_time.avg)
+            # logs_ += 'Data(s): %2.3f, Loss(s): %2.3f, ' % (data_time.avg, loss_time.avg)
             logs_ += 'Forward(s): %2.3f, Backward(s): %2.3f, ' % (forward_time.avg, backward_time.avg)
             logs_ += 'Top1: %2.3f, Top5: %2.4f, ' % (top1.avg, top5.avg)
             logs_ += 'Loss: %2.3f' % loss_calculator.get_loss_log()

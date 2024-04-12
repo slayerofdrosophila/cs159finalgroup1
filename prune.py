@@ -67,7 +67,7 @@ def prune_step(network, prune_layers, prune_channels, independent_prune_flag):
 
 
 def get_channel_index(kernel, num_elimination, residue=None):
-    # get cadidate channel index for pruning
+    # get candidate channel index for pruning
     # 'residue' is needed for pruning by 'independent strategy'
 
     sum_of_kernel = torch.sum(torch.abs(kernel.view(kernel.size(0), -1)), dim=1)

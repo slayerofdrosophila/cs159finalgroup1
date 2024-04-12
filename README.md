@@ -32,22 +32,22 @@ Usage
 
 ### Example Scripts
 
-#### Train VGG on CIFAR-10 Data set
+#### Train Resnet-50 on CIFAR-10 Data set
 ```
-python main.py --train-flag --data-set CIFAR10 --vgg vgg16_bn --save-path ./trained_models/
+python main.py --train-flag --data-set CIFAR10 --save-path ./trained_models/ --load-path ./trained_models/check_point.pth --resume-flag
 ```
 
-#### Prune VGG by 'greedy strategy'
+#### Prune VGG by 'greedy strategy' (incomplete)
 ```
 python main.py --prune-flag --load-path ./trained_models/check_point.pth --save-path ./trained_models/pruning_reuslts/ --prune-layers conv1 conv2 --prune-channels 1 1 
 ```
 
-#### Prune VGG by 'independent strategy'
+#### Prune VGG by 'independent strategy' (incomplete)
 ```
 python main.py --prune-flag --load-path ./trained_models/check_point.pth --save-path ./trained_models/pruning_reuslts/ --prune-layers conv1 conv2 --prune-channels 1 1 --independent-prune-flag
 ```
 
-#### Retrain the pruned network
+#### Retrain the pruned network (incomplete)
 ```
 python main.py --prune-flag --load-path ./trained_models/check_point.pth --save-path ./trained_models/pruning_reuslts/ --prune-layers conv1 --prune-channels 1 --retrain-flag --retrain-epoch 20 --retrain-lr 0.001
 ```
