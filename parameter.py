@@ -20,7 +20,7 @@ def build_parser():
     parser.add_argument('--start-epoch', type=int, help='start epoch for training network', default=0)
 
     # ref: https://github.com/kuangliu/pytorch-cifar
-    parser.add_argument('--epoch', type=int, help='number of epoch for training network', default=350)
+    parser.add_argument('--epoch', type=int, help='number of epoch for training network', default=164)
     parser.add_argument('--batch-size', type=int, help='batch size', default=128)
     parser.add_argument('--num-workers', type=int, help='number of workers for data loader', default=2)
     parser.add_argument('--lr', type=float, help='learning rate', default=0.1)
