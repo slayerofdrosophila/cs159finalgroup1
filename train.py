@@ -44,6 +44,7 @@ def train_network(args, network=None, data_set=None):
                    args.save_path + "check_point.pth")
         writer.add_scalar('Loss/train', loss_calculator.get_loss_log(), epoch)
 
+    writer.close()
     return network
 
 
@@ -96,4 +97,3 @@ def train_step(network, data_loader, loss_calculator, optimizer, device, epoch, 
             print(logs_)
 
         tic = time.time()
-    return None

@@ -23,7 +23,7 @@ def build_parser():
     parser.add_argument('--epoch', type=int, help='number of epoch for training network', default=164)  # To fit with Resnet number of iterations
     parser.add_argument('--batch-size', type=int, help='batch size', default=128)
     parser.add_argument('--num-workers', type=int, help='number of workers for data loader', default=2)
-    parser.add_argument('--lr', type=float, help='learning rate', default=0.1)
+    parser.add_argument('--lr', type=float, help='learning rate', default=0.001)
     parser.add_argument('--lr-milestone', type=list, help='list of epoch for adjust learning rate', default=[150, 250])
     parser.add_argument('--lr-gamma', type=float, help='factor for decay learning rate', default=0.1)
     parser.add_argument('--momentum', type=float, help='momentum for optimizer', default=0.9)
