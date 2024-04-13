@@ -11,7 +11,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 def test_network(model=get_model()):
     model = model.to(device)
-    dataloader = get_dataloader()
+    dataloader = get_dataloader(training=False)
 
     time_start = time.time()
     accuracy = test_step(model, dataloader)

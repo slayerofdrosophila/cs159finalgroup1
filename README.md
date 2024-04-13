@@ -1,6 +1,13 @@
 # Pruning Filters For Efficient ConvNets
 
-INCOMPLETE
+Train the model
+```python main.py --action train```
+
+Prune the model and retrain it
+```python main.py --action prune```
+
+Evaluate the model
+```python main.py --action test```
 
 #### Absolute sum of filter weights for each layer of VGG-16 trained on CIFARA-10
 * This graph was created in [jupyter notebook](https://github.com/tyui592/notepad/blob/master/pruning_filters_for_efficient_convets/prune_filter_for_efficient_convnets.ipynb). You can make the graph yourself.
