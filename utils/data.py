@@ -1,8 +1,9 @@
+import torch
 import torchvision
 from torch.utils.data import DataLoader
-from torchvision.transforms.v2 import RandomCrop, RandomHorizontalFlip, ToTensor, Normalize, Compose
+from torchvision.transforms.v2 import RandomCrop, RandomHorizontalFlip, ToTensor, Normalize, Compose, ToImage, ToDtype
 
-import args
+from utils import args
 
 
 class NoneTransform(object):
@@ -31,7 +32,7 @@ def get_transformer(training=True):
         if args.random_hflip:
             transformers.append(RandomHorizontalFlip())
 
-    transformers.append(ToTensor())
+    transformers.append(Compose([ToImage(), ToDtype(torch.float32, scale=True)]))
     transformers.append(get_normalizer(args.dataset))
 
     return Compose(transformers)
@@ -39,6 +40,6 @@ def get_transformer(training=True):
 
 def get_dataloader(training=True):
     dataset = (torchvision.datasets.__dict__[args.dataset]
-               (train=training, transform=get_transformer(training), download=True))
+               (root="/data", train=training, transform=get_transformer(training), download=True))
     dataloader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True, num_workers=2)
     return dataloader

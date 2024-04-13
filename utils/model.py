@@ -1,9 +1,9 @@
 import torch
 import torchvision.models as models
 from torch.nn import Module, Linear, Sequential, BatchNorm1d
-from torchvision.models import resnet50
+from torchvision.models import resnet50, VGG16_BN_Weights, ResNet50_Weights
 
-import args
+from utils import args
 
 
 def get_output_classes():
@@ -18,7 +18,7 @@ def get_output_classes():
 class VGG(Module):
     def __init__(self, output_classes=10, pretrained=False):
         super(VGG, self).__init__()
-        self.features = models.vgg16_bn(pretrained=pretrained).features
+        self.features = models.vgg16_bn(weights=VGG16_BN_Weights.DEFAULT if pretrained else None).features
         
         self.classifier = Sequential(
             Linear(512, 512),
@@ -34,14 +34,15 @@ class VGG(Module):
 
 
 def get_model():
+    pretrained = args.pretrained and not args.load_path
     if args.model == 'VGG':
-        network = VGG(output_classes=get_output_classes(), pretrained=args.pretrained and not args.load_path)
+        network = VGG(output_classes=get_output_classes(), pretrained=pretrained)
     else:  # args.model == 'ResNet'
-        network = resnet50(pretrained=args.pretrained and not args.load_path)
+        network = resnet50(weights=ResNet50_Weights.DEFAULT if pretrained else None)
         network.fc = Linear(network.fc.in_features, get_output_classes())
 
     if args.load_path:
         checkpoint = torch.load(args.load_path)
-        network.load_state_dict(checkpoint['weights'])
+        network.load_state_dict(checkpoint['state_dict'])
 
     return network

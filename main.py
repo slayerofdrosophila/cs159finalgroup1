@@ -1,11 +1,11 @@
 import torch
 
-import args
-from train import train_network
-from evaluate import test_network
-from prune import prune_network
-
 import time
+
+from procedures.evaluate import test_network
+from procedures.prune import prune_network
+from procedures.train import train_network
+from utils import args
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 

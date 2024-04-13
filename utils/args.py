@@ -6,12 +6,12 @@ parser = argparse.ArgumentParser(prog="Pruning Filters for Efficient ConvNets",
                                  description="This program helps demonstrate filter pruning.")
 parser.add_argument('--action', choices=['train', 'prune', 'test'], required=True, help="Action to perform")
 parser.add_argument('--dataset', choices=torchvision.datasets.__all__, default='CIFAR10', help="Dataset to use")
-parser.add_argument('--model', choices=['vgg', 'resnet'], default='vgg', help="Model to use, either VGG16 or ResNet50")
+parser.add_argument('--model', choices=['VGG', 'ResNet'], default='VGG', help="Model to use, either VGG16 or ResNet50")
 
 parser.add_argument('--pretrained', type=bool, default=True, help="Use PyTorch's pretrained weights")
 parser.add_argument('--load-path', type=str, help="Load weights from an existing file")
 parser.add_argument('--save-path', type=str, default="model.pth", help="Save weights to a file")
-parser.add_argument('--resume-epoch', type=int, default=0, help="Epoch to resume training")
+parser.add_argument('--resume-epoch', type=int, default=-1, help="Epoch to resume training")
 
 parser.add_argument('--epochs', type=int, default=160, help="Number of epochs to train/retrain the model")
 parser.add_argument('--batch-size', type=int, default=128, help="Batch size for training")
@@ -41,7 +41,7 @@ batch_size: int = args.batch_size
 lr: float = args.lr
 lr_decay: int = args.lr_decay
 image_crop: int = args.image_crop
-random_hflip: bool = args.image_random_flip
+random_hflip: bool = args.random_hflip
 
 independent_prune_flag: bool = args.independent_prune_flag
 prune_layers: list = args.prune_layers
