@@ -14,9 +14,7 @@ if __name__ == '__main__':
     print(f"Device: {device}")
 
     start_time = time.time()
-    # print(f"{"-*-" * 10}\n\tRunning: {args.action}\n{"-*-" * 10}")
     print(f"{'-*-' * 10}\n\tRunning: {args.action}\n{'-*-' * 10}")
-
 
     if args.action == 'train':
         train_network()

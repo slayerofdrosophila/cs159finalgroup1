@@ -1,14 +1,18 @@
 import torch
 
 from utils import args
-from utils.model import get_model
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 def prune_network():
+    from utils.model import get_model  # Avoids a circular import with get_model() using the pruning routine
+
     model = get_model().to(device)
+
+    print(model)
     model = prune_step(model, args.prune_layers, args.prune_channels, args.independent_prune_flag)
+    print(model)
 
     return model
 
