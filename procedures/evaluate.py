@@ -9,7 +9,9 @@ from utils.model import get_model
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-def test_network(model=get_model()):
+def test_network(model=None):
+    if model is None:
+        model = get_model()
     model = model.to(device)
     dataloader = get_dataloader(training=False)
 

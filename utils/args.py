@@ -1,4 +1,6 @@
 import argparse
+import os
+import sys
 
 import torchvision
 
@@ -25,7 +27,10 @@ parser.add_argument('--independent-prune-flag', action='store_true', default=Fal
 parser.add_argument('--prune-layers', nargs='+', help='layer index for pruning', default=None)
 parser.add_argument('--prune-channels', nargs='+', type=int, help='number of channel to prune layers', default=None)
 
-args = parser.parse_args()
+if os.environ['JUPYTER'] == 'True':
+    args = parser.parse_args(os.environ['JUPYTER_ARGS'].split())
+else:
+    args = parser.parse_args()
 
 action: str = args.action
 dataset: str = args.dataset
