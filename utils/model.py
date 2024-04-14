@@ -35,6 +35,11 @@ class VGG(Module):
 
 
 def get_model():
+    """
+    Returns the model based on the program arguments. If the action is set to test and pruning arguments are
+    provided, the model will be pruned accordingly before loading the weights.
+    """
+
     pretrained = args.pretrained and not args.load_path
     if args.model == 'VGG':
         model = VGG(output_classes=get_output_classes(), pretrained=pretrained)

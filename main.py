@@ -20,7 +20,8 @@ if __name__ == '__main__':
         train_network()
     elif args.action == 'prune':
         model = prune_network()
-        train_network(model)
+        if args.prune_retrain:
+            train_network(model)
     elif args.action == 'test':
         test_network()
 

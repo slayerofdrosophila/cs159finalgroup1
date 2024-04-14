@@ -22,6 +22,7 @@ parser.add_argument('--lr-decay', type=int, default=10, help="Half the learning 
 parser.add_argument('--image-crop', type=int, default=32, help="Size for random image cropping in training")
 parser.add_argument('--random-hflip', type=bool, default=True, help="Randomly flip images horizontally in training")
 
+parser.add_argument('--prune-retrain', type=bool, default=False)
 parser.add_argument('--independent-prune-flag', action='store_true', default=False,
                     help='prune multiple layers by "independent strategy"')
 parser.add_argument('--prune-layers', nargs='+', help='layer index for pruning', default=None)
@@ -48,6 +49,7 @@ lr_decay: int = args.lr_decay
 image_crop: int = args.image_crop
 random_hflip: bool = args.random_hflip
 
+prune_retrain: bool = args.prune_retrain
 independent_prune_flag: bool = args.independent_prune_flag
 prune_layers: list = args.prune_layers
 prune_channels: list = args.prune_channels
