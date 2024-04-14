@@ -14,8 +14,8 @@ from utils import args
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-def train_network(model=get_model()):
-    writer = SummaryWriter()
+def train_network(model=get_model(), write=True):
+    writer = SummaryWriter() if write else None
 
     model = model.to(device)
     dataloader = get_dataloader()
@@ -31,10 +31,12 @@ def train_network(model=get_model()):
 
         torch.save({'epoch': epoch + 1, 'state_dict': model.state_dict(), 'loss_sequence': loss_calc.loss_seq},
                    args.save_path)
-        writer.add_scalar("training/accuracy", accuracy, epoch)
-        writer.add_scalar("training/loss", loss_calc.get_average_loss(), epoch)
+        if writer is not None:
+            writer.add_scalar("training/accuracy", accuracy, epoch)
+            writer.add_scalar("training/loss", loss_calc.get_average_loss(), epoch)
 
-    writer.close()
+    if writer is not None:
+        writer.close()
 
 
 def train_step(model, dataloader, loss_calc, optimizer, scheduler):
