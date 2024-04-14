@@ -20,16 +20,17 @@ parser.add_argument('--batch-size', type=int, default=128, help="Batch size for 
 parser.add_argument('--lr', type=float, default=0.001, help="Learning rate")
 parser.add_argument('--lr-decay', type=int, default=10, help="Half the learning rate every n epochs")
 parser.add_argument('--image-crop', type=int, default=32, help="Size for random image cropping in training")
-parser.add_argument('--random-hflip', type=bool, default=True, help="Randomly flip images horizontally in training")
+parser.add_argument('--random-hflip', action='store_true', default=True,
+                    help="Randomly flip images horizontally in training")
 
-parser.add_argument('--prune-retrain', type=bool, default=False)
+parser.add_argument('--prune-retrain', action='store_true', default=False)
 parser.add_argument('--independent-prune-flag', action='store_true', default=False,
                     help='prune multiple layers by "independent strategy"')
 parser.add_argument('--prune-layers', nargs='+', help='layer index for pruning', default=None)
 parser.add_argument('--prune-channels', nargs='+', type=int, help='number of channel to prune layers', default=None)
 
-if os.environ['JUPYTER'] == 'True':
-    args = parser.parse_args(os.environ['JUPYTER_ARGS'].split())
+if os.environ.get('JUPYTER') == 'True':
+    args = parser.parse_args(os.environ.get('JUPYTER_ARGS').split())
 else:
     args = parser.parse_args()
 
