@@ -10,6 +10,11 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 def test_network(model=None):
+    """
+    Load the model and test it on the test dataset.
+    If no model is provided, the model is loaded according to program arguments.
+    """
+
     if model is None:
         model = get_model()
     model = model.to(device)
@@ -23,6 +28,8 @@ def test_network(model=None):
 
 
 def test_step(model, dataloader):
+    """Tests the model on the dataloader and returns the accuracy."""
+
     model.eval()
 
     total_accuracy = 0

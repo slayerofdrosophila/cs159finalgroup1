@@ -17,6 +17,10 @@ def get_output_classes():
 
 
 class VGG(Module):
+    """
+    This class wraps PyTorch's vgg16_bn model with a classifier set to the desired number of output classes.
+    """
+
     def __init__(self, output_classes=10, pretrained=False):
         super(VGG, self).__init__()
         self.features = models.vgg16_bn(weights=VGG16_BN_Weights.DEFAULT if pretrained else None).features
@@ -36,7 +40,7 @@ class VGG(Module):
 
 def get_model():
     """
-    Returns the model based on the program arguments. If the action is set to test and pruning arguments are
+    Returns the model based on the program arguments. If --action is set to test and pruning arguments are
     provided, the model will be pruned accordingly before loading the weights.
     """
 

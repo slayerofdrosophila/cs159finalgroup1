@@ -1,3 +1,9 @@
+"""
+This program helps demonstrate filter pruning by providing a basic implementation of the paper
+"Pruning Filters for Efficient ConvNets," ICLR 2017. Use the --action argument to either train,
+prune, or test a model. See utils/args.py for the available arguments.
+"""
+
 import torch
 
 import time

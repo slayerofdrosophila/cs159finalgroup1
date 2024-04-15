@@ -7,16 +7,23 @@ from utils import args
 
 
 class NoneTransform(object):
+    """Dummy transform that does nothing"""
+
     def __call__(self, image):
         return image
 
 
-def get_normalizer(data_set):
-    if data_set == 'CIFAR10':
+def get_normalizer(dataset):
+    """
+    Returns a normalizer according to the precalculated statistics of the dataset.
+    Only CIFAR10, CIFAR100, and ImageNet are currently included here.
+    """
+
+    if dataset == 'CIFAR10':
         return Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
-    elif data_set == 'CIFAR100':
+    elif dataset == 'CIFAR100':
         return Normalize((0.5071, 0.4867, 0.4408), (0.2675, 0.2565, 0.2761))
-    elif data_set == 'ImageNet':
+    elif dataset == 'ImageNet':
         return Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
     else:
         print("No normalizer defined for this data set")
@@ -24,6 +31,8 @@ def get_normalizer(data_set):
 
 
 def get_transformer(training=True):
+    """Returns a transformer for the dataset, with augmentations if training=True."""
+
     transformers = []
 
     if training:
@@ -39,6 +48,8 @@ def get_transformer(training=True):
 
 
 def get_dataloader(training=True):
+    """Returns a DataLoader for the dataset, according to program arguments"""
+
     dataset = (torchvision.datasets.__dict__[args.dataset]
                (root="/data", train=training, transform=get_transformer(training), download=True))
     dataloader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True, num_workers=2)
