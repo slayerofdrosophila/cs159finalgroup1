@@ -13,19 +13,18 @@ def prune_network():
 
     model = get_model().to(device)
 
-    print(model)
-
     if args.model == "ResNet":
         model = prune_resnet(model)
     else:
-        model = prune_step(model, args.prune_layers, args.prune_channels, args.independent_prune_flag, args.smarter_uniqueness)
-    
-    print(model)
+        model = prune_step(model, args.prune_layers, args.prune_channels,
+                           args.independent_prune_flag, args.alternative_criteria)
+
+    print("Pruned network")
 
     return model
 
 
-def prune_step(model, prune_layers, prune_channels, independent_prune_flag, smarter_uniqueness):
+def prune_step(model, prune_layers, prune_channels, independent_prune_flag, alternative_criteria):
     model = model.cpu()
 
     count = 0  # count for indexing 'prune_channels'
@@ -40,7 +39,7 @@ def prune_step(model, prune_layers, prune_channels, independent_prune_flag, smar
                 dim ^= 1
 
             if 'conv%d' % conv_count in prune_layers:
-                if smarter_uniqueness:
+                if alternative_criteria:
                     channel_index = get_pruning_candidates(model.features[i].weight.data, prune_channels[count])
                 else:
                     channel_index = get_channel_index(model.features[i].weight.data, prune_channels[count], residue)
