@@ -20,6 +20,8 @@ def test_network(model=None):
     model = model.to(device)
     dataloader = get_dataloader(training=False)
 
+    print("Testing network...")
+
     time_start = time.time()
     accuracy = test_step(model, dataloader)
     time_end = time.time()

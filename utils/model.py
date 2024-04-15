@@ -53,7 +53,7 @@ def get_model(prune=True):
 
     if args.action == 'test' and args.prune_layers is not None and prune:
         model = prune_step(model, args.prune_layers, args.prune_channels,
-                           args.independent_prune_flag, args.smarter_uniqueness)
+                           args.independent_prune_flag, True)
 
     if args.load_path:
         checkpoint = torch.load(args.load_path)
