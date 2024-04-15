@@ -5,7 +5,7 @@ import torchvision
 
 parser = argparse.ArgumentParser(prog="Pruning Filters for Efficient ConvNets",
                                  description="This program helps demonstrate filter pruning.")
-parser.add_argument('--action', choices=['train', 'prune', 'test'], required=True, help="Action to perform")
+parser.add_argument('--action', choices=['train', 'prune', 'test', 'quantize', 'low-rank-approximate'], required=True, help="Action to perform")
 parser.add_argument('--dataset', choices=torchvision.datasets.__all__, default='CIFAR10', help="Dataset to use")
 parser.add_argument('--model', choices=['VGG', 'ResNet'], default='VGG', help="Model to use, either VGG16 or ResNet50")
 
