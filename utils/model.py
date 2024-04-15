@@ -38,7 +38,7 @@ class VGG(Module):
         return x
 
 
-def get_model():
+def get_model(prune=True):
     """
     Returns the model based on the program arguments. If --action is set to test and pruning arguments are
     provided, the model will be pruned accordingly before loading the weights.
@@ -51,8 +51,9 @@ def get_model():
         model = resnet50(weights=ResNet50_Weights.DEFAULT if pretrained else None)
         model.fc = Linear(model.fc.in_features, get_output_classes())
 
-    if args.action == 'test' and args.prune_layers is not None:
-        model = prune_step(model, args.prune_layers, args.prune_channels, args.independent_prune_flag)
+    if args.action == 'test' and args.prune_layers is not None and prune:
+        model = prune_step(model, args.prune_layers, args.prune_channels,
+                           args.independent_prune_flag, args.smarter_uniqueness)
 
     if args.load_path:
         checkpoint = torch.load(args.load_path)

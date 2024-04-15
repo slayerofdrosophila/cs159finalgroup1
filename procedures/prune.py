@@ -1,4 +1,5 @@
 import torch
+from torch.nn.functional import cosine_similarity
 
 from utils import args
 
@@ -11,13 +12,13 @@ def prune_network():
     model = get_model().to(device)
 
     print(model)
-    model = prune_step(model, args.prune_layers, args.prune_channels, args.independent_prune_flag)
+    model = prune_step(model, args.prune_layers, args.prune_channels, args.independent_prune_flag, args.smarter_uniqueness)
     print(model)
 
     return model
 
 
-def prune_step(model, prune_layers, prune_channels, independent_prune_flag):
+def prune_step(model, prune_layers, prune_channels, independent_prune_flag, smarter_uniqueness):
     model = model.cpu()
 
     count = 0  # count for indexing 'prune_channels'
@@ -32,7 +33,10 @@ def prune_step(model, prune_layers, prune_channels, independent_prune_flag):
                 dim ^= 1
 
             if 'conv%d' % conv_count in prune_layers:
-                channel_index = get_channel_index(model.features[i].weight.data, prune_channels[count], residue)
+                if smarter_uniqueness:
+                    channel_index = get_pruning_candidates(model.features[i].weight.data, prune_channels[count])
+                else:
+                    channel_index = get_channel_index(model.features[i].weight.data, prune_channels[count], residue)
                 new_ = get_new_conv(model.features[i], dim, channel_index, independent_prune_flag)
                 model.features[i] = new_
                 dim ^= 1
@@ -63,6 +67,39 @@ def get_channel_index(kernel, num_elimination, residue=None):
     vals, args = torch.sort(sum_of_kernel)
 
     return args[:num_elimination].tolist()
+
+
+def get_pruning_candidates(kernel, num_candidates):
+    """
+    This is a custom attempt to get the channels with the lowest "importance" by
+    finding the least unique kernels in the layer. It appears to work better than l1 norm
+    in preliminary tests.
+    """
+
+    flattened_kernel = kernel.view(kernel.size(0), -1)
+
+    # Compute pairwise cosine similarity between kernels
+    similarity_matrix = cosine_similarity(flattened_kernel.unsqueeze(1), flattened_kernel.unsqueeze(0), dim=-1)
+    similarity_matrix[torch.eye(similarity_matrix.size(0)).bool()] = -1.0
+
+    # Get indices of kernels sorted by similarity to their closest neighbor
+    sorted_indices = torch.argsort(similarity_matrix, dim=1)
+
+    pruning_candidates = []
+    for i in range(kernel.size(0)):
+        # Find the index of the closest neighbor that has not already been selected as a candidate
+        neighbor_idx = 0
+        while sorted_indices[i, neighbor_idx].item() in pruning_candidates:
+            neighbor_idx += 1
+
+        # Add the current kernel and its closest neighbor to the pruning candidates
+        pruning_candidates.append(i)
+        pruning_candidates.append(sorted_indices[i, neighbor_idx].item())
+
+        if len(pruning_candidates) >= num_candidates:
+            break
+
+    return pruning_candidates[:num_candidates]
 
 
 def index_remove(tensor, dim, index, removed=False):
