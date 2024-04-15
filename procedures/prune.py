@@ -3,6 +3,8 @@ from torch.nn.functional import cosine_similarity
 
 from utils import args
 
+from procedures.resnet_pruning import prune_resnet
+
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
@@ -12,7 +14,12 @@ def prune_network():
     model = get_model().to(device)
 
     print(model)
-    model = prune_step(model, args.prune_layers, args.prune_channels, args.independent_prune_flag, args.smarter_uniqueness)
+
+    if args.model == "ResNet":
+        model = prune_resnet(model)
+    else:
+        model = prune_step(model, args.prune_layers, args.prune_channels, args.independent_prune_flag, args.smarter_uniqueness)
+    
     print(model)
 
     return model
@@ -175,87 +182,3 @@ def get_new_linear(linear, channel_index):
 
 
 
-
-def prune_resnet(model):
-    model = model.cpu()
-
-    notatthebeginning = False
-    for name, module in model.named_modules():
-
-        # Check if the module is a Conv2d layer within a Bottleneck block's 'conv1'
-        if isinstance(module, torch.nn.Conv2d) and 'conv1' in name and module.kernel_size == (1,1):
-
-            notatthebeginning = True
-
-            print("Original:", module)
-
-            # Cut half the channels
-            in_channels = module.in_channels
-            out_channels = module.out_channels // 2  # Reducing the number of filters by half
-            kernel_size = module.kernel_size
-            stride = module.stride
-            padding = module.padding
-            bias = module.bias is not None
-
-            print("Out channels", module.out_channels)
-
-            # Remove half the old filters... No cireteria rn
-            orig_filters = module.weight.clone()
-            new_filters = orig_filters[:out_channels, :, :, :]
-
-            # Creating a new layer with modified parameters
-            new_layer = torch.nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding, bias=bias)
-            new_layer.weight.data = new_filters
-
-            # Replace the original layer with the new one
-            print(name)
-            parent_name, child_name = name.rsplit('.', 1)
-            parent_module = dict(model.named_modules())[parent_name]
-            setattr(parent_module, child_name, new_layer)
-            print(f"Modified: {new_layer}")
-            print("New out channels", out_channels)
-
-        # Remake layer below
-        if isinstance(module, torch.nn.Conv2d) and 'conv2' in name:
-            notatthebeginning = True
-
-            # Remake layer below in order to fit
-            print(f"Original: {module}")
-
-            in_channels = module.in_channels // 2 
-            out_channels = module.out_channels 
-            kernel_size = module.kernel_size
-            stride = module.stride
-            padding = module.padding
-            bias = module.bias is not None
-
-            # Creating a new layer with modified parameters
-            new_layer = torch.nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding, bias=bias)
-
-            # Sadly, layer must be clean slate... i thnk
-            # Initialize the new layer (example with Xavier uniform)
-            torch.nn.init.xavier_uniform_(new_layer.weight)
-
-            # Replace the original layer with the new one
-            parent_name, child_name = name.rsplit('.', 1)
-            parent_module = dict(model.named_modules())[parent_name]
-            setattr(parent_module, child_name, new_layer)
-            print(f"Modified: {new_layer}")
-
-        # Remake batchnorm layer between the two
-        if isinstance(module, torch.nn.BatchNorm2d) and 'bn1' in name and notatthebeginning:
-            # Assuming the convolutional layer's output channels were modified to `new_out_channels`
-            # Get the number of features from the conv layer that feeds into this bn layer
-            conv_name = name.replace('bn1', 'conv1')
-            conv_layer = dict(model.named_modules())[conv_name]
-            new_out_channels = conv_layer.out_channels  # Adjusted in previous steps
-
-
-            # Create a new BatchNorm2d layer
-            new_bn_layer = torch.nn.BatchNorm2d(new_out_channels)
-
-            # Replace the original bn layer with the new one
-            parent_name, child_name = name.rsplit('.', 1)
-            parent_module = dict(model.named_modules())[parent_name]
-            setattr(parent_module, child_name, new_bn_layer)
-            print(f"Updated BatchNorm layer {name} to new out_channels: {new_out_channels}")

@@ -29,6 +29,9 @@ parser.add_argument('--independent-prune-flag', action='store_true', default=Fal
 parser.add_argument('--prune-layers', nargs='+', help='layer index for pruning', default=None)
 parser.add_argument('--prune-channels', nargs='+', type=int, help='number of channel to prune layers', default=None)
 
+# resnet only
+parser.add_argument('--prune-stages', nargs='+', help='"stage" indices for pruning (i call a group of blocks, a stage)', default=None)
+
 # If using Jupyter Notebook, provide the arguments as environment variables
 if os.environ.get('JUPYTER') == 'True':
     args = parser.parse_args(os.environ.get('JUPYTER_ARGS').split())
@@ -56,3 +59,5 @@ smarter_uniqueness: bool = args.smarter_uniqueness
 independent_prune_flag: bool = args.independent_prune_flag
 prune_layers: list = args.prune_layers
 prune_channels: list = args.prune_channels
+
+prune_stages: list = args.prune_stages
