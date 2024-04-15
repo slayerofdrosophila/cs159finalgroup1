@@ -15,6 +15,13 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 def train_network(model=get_model(), write=True):
+    """
+    Train the neural network model.
+
+    Args:
+        model (torch.nn.Module): The neural network model to be trained.
+        write (bool): Flag indicating whether to write training logs to TensorBoard. Default is True.
+    """
     writer = SummaryWriter() if write else None
 
     model = model.to(device)
@@ -40,6 +47,20 @@ def train_network(model=get_model(), write=True):
 
 
 def train_step(model, dataloader, loss_calc, optimizer, scheduler):
+    """
+    Perform a single training step on the model.
+
+    Args:
+        model (torch.nn.Module): The neural network model.
+        dataloader (torch.utils.data.DataLoader): DataLoader providing the training data.
+        loss_calc (LossCalculator): Object to calculate the loss.
+        optimizer (torch.optim.Optimizer): The optimizer used for updating the model's parameters.
+        scheduler (torch.optim.lr_scheduler._LRScheduler): Learning rate scheduler.
+
+    Returns:
+        float: Accuracy achieved during the training step.
+        float: Loss computed during the training step.
+    """
     model.train()
     torch.backends.cudnn.benchmark = True  # set benchmark flag to faster runtime
 
